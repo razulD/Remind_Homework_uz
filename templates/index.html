@@ -1,0 +1,174 @@
+kk<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Manager | Uy Vazifalari</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .lang-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .lang-btn {
+            background-color: #111;
+            color: #aaa;
+            border: 1px solid #555;
+            padding: 6px 14px;
+            width: auto;
+            margin: 0;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: white;
+            color: black;
+            border-color: white;
+        }
+        .lang-btn:hover {
+            background-color: #ccc;
+            color: black;
+        }
+        h2 {
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+        }
+        form {
+            background-color: #111;
+            padding: 20px;
+            border: 1px solid white;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: white;
+            color: black;
+            border: 1px solid white;
+        }
+        .submit-btn {
+            padding: 10px;
+            margin: 15px 0 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        .submit-btn:hover {
+            background-color: #ccc;
+        }
+        .task-card {
+            border: 1px solid white;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .task-text {
+            word-break: break-word;
+        }
+        .done-btn {
+            background-color: white;
+            color: black;
+            width: auto;
+            margin: 0;
+            padding: 6px 15px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .done-btn:hover {
+            background-color: #ccc;
+        }
+        .nav-link {
+            color: gray;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lang-bar">
+        <button type="button" class="lang-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" id="btn-uz" onclick="setLanguage('uz')">UZ</button>
+    </div>
+
+    <h2 data-i18n="add_heading">--- Add New Homework ---</h2>
+
+    <form action="/add" method="POST">
+        <label for="subjectSelect" data-i18n="select_subject">1. Select Subject:</label>
+        <select name="subject" id="subjectSelect" onchange="toggleCustom()">
+            {% for sub in subjects %}
+                <option value="{{ sub }}">{{ sub }}</option>
+            {% endfor %}
+        </select>
+
+        <input
+            type="text"
+            name="custom_subject"
+            id="customInput"
+            placeholder="Type custom subject..."
+            style="display:none;"
+        >
+
+        <label for="taskInput" style="margin-top:15px;" data-i18n="what_homework">2. What is the homework?</label>
+        <input
+            type="text"
+            name="task"
+            id="taskInput"
+            placeholder="Enter homework details..."
+            required
+        >
+
+        <button type="submit" class="submit-btn" data-i18n="add_btn">ADD HOMEWORK</button>
+    </form>
+
+    <h2 data-i18n="active_heading">--- Active Homework ---</h2>
+
+    {% if not tasks %}
+        <p style="color: gray;" data-i18n="empty_active">Nothing to do right now!</p>
+    {% endif %}
+
+    {% for index, t in tasks %}
+        <div class="task-card">
+            <div class="task-text">
+                <strong class="subj-tag" data-raw-subj="{{ t.subject }}">[{{ t.subject }}]</strong><br>
+                {{ t.task }}
+            </div>
+            <a href="/done/{{ index }}" class="done-btn" data-i18n="mark_done">Mark Done</a>
+        </div>
+    {% endfor %}
+
+    <a href="/archive" class="nav-

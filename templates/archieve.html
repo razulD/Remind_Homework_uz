@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archived Homework | Bajarilgan Vazifalar</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .lang-bar {
+            display: flex;
+            gap: 8px;
+        }
+        .lang-btn {
+            background-color: #111;
+            color: #aaa;
+            border: 1px solid #555;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: white;
+            color: black;
+            border-color: white;
+        }
+        .lang-btn:hover {
+            background-color: #ccc;
+            color: black;
+        }
+        h2 {
+            border-bottom: 2px solid gray;
+            padding-bottom: 10px;
+            color: gray;
+        }
+        .task-card {
+            border: 1px solid gray;
+            padding: 15px;
+            margin-bottom: 10px;
+            color: #aaa;
+            word-break: break-word;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-row">
+        <a href="/" class="nav-link" data-i18n="back_link">&larr; Back to Active Homework</a>
+        <div class="lang-bar">
+            <button type="button" class="lang-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
+            <button type="button" class="lang-btn" id="btn-uz" onclick="setLanguage('uz')">UZ</button>
+        </div>
+    </div>
+
+    <h2 data-i18n="completed_heading">Completed Tasks</h2>
+
+    {% if not tasks %}
+        <p style="color: gray;" data-i18n="empty_archive">No completed homework yet.</p>
+    {% endif %}
+
+    {% for t in tasks %}
+        <div class="task-card">
+            <strong class="subj-tag" data-raw-subj="{{ t.subject }}">[{{ t.subject }}]</strong><br>
+            {{ t.task }}
+        </div>
+    {% endfor %}
+
+    <script>
+        var translations = {
+            en: {
+                back_link: "\u2190 Back to Active Homework",
+                completed_heading: "Completed Tasks",
+                empty_archive: "No completed homework yet."
+            },
+            uz: {
+                back_link: "\u2190 Faol vazifalarga qaytish",
+                completed_heading: "Bajarilgan Vazifalar",
+                empty_archive: "Hozircha bajarilgan uy vazifalari yo'q."
+            }
+        };
+
+        var subjectNames = {
+            "ITS": { en: "ITS", uz: "ITS (Axborot tizimlari)" },
+            "ENTERPRISE IN IT": { en: "ENTERPRISE IN IT", uz: "IT TADBIRKORLIK" },
+            "WEBSITE DEVELOPMENT": { en: "WEBSITE DEVELOPMENT", uz: "VEB-SAYT YARATISH" },
+            "STUDY SKILLS": { en: "STUDY SKILLS", uz: "O'QISH KO'NIKMALARI" },
+            "PROGRAMMING": { en: "PROGRAMMING", uz: "DASTURLASH" },
+            "HISTORY": { en: "HISTORY", uz: "TARIX" },
+            "OTHERS": { en: "OTHERS", uz: "BOSHQA FAN..." }
+        };
+
+        function setLanguage(lang) {
+            if (lang !== "en" && lang !== "uz") {
+                lang = "en";
+            }
+            try {
+                localStorage.setItem("hw_lang", lang);
+            } catch (e) {}
+
+            document.getElementById("btn-en").className = (lang === "en") ? "lang-btn active" : "lang-btn";
+            document.getElementById("btn-uz").className = (lang === "uz") ? "lang-btn active" : "lang-btn";
+
+            var dict = translations[lang];
+            var elements = document.querySelectorAll("[data-i18n]");
+            for (var i = 0; i < elements.length; i++) {
+                var key = elements[i].getAttribute("data-i18n");
+                if (dict[key]) {
+                    elements[i].textContent = dict[key];
+                }
+            }
+
+            var tags = document.querySelectorAll(".subj-tag");
+            for (var k = 0; k < tags.length; k++) {
+                var raw = tags[k].getAttribute("data-raw-subj");
+                if (subjectNames[raw]) {
+                    tags[k].textContent = "[" + subjectNames[raw][lang] + "]";
